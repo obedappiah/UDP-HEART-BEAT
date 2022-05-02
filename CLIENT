@@ -1,0 +1,25 @@
+# UDP heartbeat Client
+import socket
+import time
+
+clientSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) #Client socket address
+serverPort= 12000
+server_addr = ('localhost', serverPort) #localhost is used as server
+clientSock.settimeout(2) 
+
+try:
+    for i in range(1, 11): #numbering of 10 packets to be sent
+        start = time.time()
+        message = 'Ping #' + str(i) + "\r\n" + str(start) 
+        try:
+            sent = clientSock.sendto(message.encode(), server_addr)#message is encoded to bytes and sent to server
+            print("Sent " + message)
+            data, server = clientSock.recvfrom(4096) #message received from server is stored in data
+        
+            print(data.decode() )           
+        except socket.timeout:
+            print("#" + str(i) + " Client application has stopped\n")
+
+finally:
+    print("Client application has stopped")
+    clientSock.close()
